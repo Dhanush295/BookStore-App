@@ -13,11 +13,11 @@ const express_1 = require("express");
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const router = (0, express_1.Router)();
-router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/createbook", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const Bookdetails = req.body;
     const book = yield prisma.books.findFirst({
         where: {
-            title: Bookdetails.title // Assuming 'details.title' holds the title you're searching for
+            title: Bookdetails.title
         }
     });
     if (!book) {
@@ -31,5 +31,32 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(201).json({ message: "Book created successfully!" });
     }
     res.status(400).json({ message: "Book Title already exist! " });
+}));
+router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const allbooks = yield prisma.books.findMany();
+    res.json({ allbooks });
+}));
+router.patch("/update/:ID", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const bookid = parseInt(req.params.ID);
+    const book = req.body;
+    const updatebooks = yield prisma.books.update({
+        where: { id: bookid },
+        data: {
+            title: book.title,
+            description: book.description,
+            link: book.link,
+        }
+    });
+    res.status(200).json({ updatebooks });
+}));
+router.delete("/delete/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const bookid = parseInt(req.params.id);
+    console.log(bookid);
+    const deletebook = yield prisma.books.delete({
+        where: {
+            id: bookid
+        }
+    });
+    res.status(200).json({ message: "Book Deleted Successfully!", deletebook });
 }));
 exports.default = router;
