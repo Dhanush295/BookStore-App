@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React from 'react';
+import React, { useState } from 'react';
 import backgroundimage from '../components/images/img1.jpg';
 import { Card, Typography, Button } from '@mui/material';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -15,6 +15,7 @@ export interface Bookdetails {
 export function Home() {
 
     const [bookList, setBooks ] = React.useState<Bookdetails[]>([]);
+    const [search , setSearch ] = React.useState<string>('');
     
     React.useEffect(()=>{
         async function fetchbooks() :Promise <void>{
@@ -28,16 +29,27 @@ export function Home() {
         }; fetchbooks();
     }, []);
 
+    const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      try {
+        const response = await axios.get(`http://localhost:3000/book/${search}`);
+        setBooks(response.data.allbooks);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
 
   return (
     <div>
       <img src={backgroundimage} style={{ width: '98vw', height: '80vh' }} alt="Background" />
       <div style={{ textAlign: 'center', marginTop: '50px' }}>
-        <form action="/search" method="get">
+        <form onSubmit={handleSearch}>
           <input
             type="text"
             placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             style={{
               padding: '10px',
               width: '300px',
@@ -65,7 +77,9 @@ export function Home() {
       <div>
         {bookList.length > 0 ? (
           <div style={{display:"flex", margin:50, justifyContent:"center", flexWrap: "wrap"}}>
-            {bookList.map((book, index) => (
+            {bookList.filter((book)=>{
+              return search.toLowerCase() === '' ? book : book.title.toLowerCase().includes(search)
+            }).map((book, index) => (
               <BookDetails key={index} {...book} />
             ))}
           </div>

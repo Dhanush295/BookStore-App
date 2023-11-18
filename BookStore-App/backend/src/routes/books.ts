@@ -61,4 +61,18 @@ router.delete("/delete/:id", async(req: Request, res: Response)=>{
     res.status(200).json({message: "Book Deleted Successfully!" })
 });
 
+router.get('/book/:book', async(req:Request, res: Response)=>{
+    const booktitle = req.params.book;
+    const book = await prisma.books.findFirst({
+        where:{
+            title: booktitle
+        }
+    });
+    if(book){
+        res.json({book})
+    }else{
+        res.status(400).json({message: "No book found"})
+    }
+});
+
 export default router;

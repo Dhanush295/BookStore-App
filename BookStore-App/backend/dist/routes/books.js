@@ -59,4 +59,18 @@ router.delete("/delete/:id", (req, res) => __awaiter(void 0, void 0, void 0, fun
     });
     res.status(200).json({ message: "Book Deleted Successfully!" });
 }));
+router.get('/book/:book', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const booktitle = req.params.book;
+    const book = yield prisma.books.findFirst({
+        where: {
+            title: booktitle
+        }
+    });
+    if (book) {
+        res.json({ book });
+    }
+    else {
+        res.status(400).json({ message: "No book found" });
+    }
+}));
 exports.default = router;
