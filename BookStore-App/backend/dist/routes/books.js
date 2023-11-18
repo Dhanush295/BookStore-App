@@ -52,11 +52,11 @@ router.patch("/update/:ID", (req, res) => __awaiter(void 0, void 0, void 0, func
 router.delete("/delete/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const bookid = parseInt(req.params.id);
     console.log(bookid);
-    const deletebook = yield prisma.books.delete({
+    prisma.books.delete({
         where: {
             id: bookid
         }
     });
-    res.status(200).json({ message: "Book Deleted Successfully!", deletebook });
+    res.status(200).json({ message: "Book Deleted Successfully!" });
 }));
 exports.default = router;
